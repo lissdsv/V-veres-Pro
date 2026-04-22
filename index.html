@@ -7,8 +7,8 @@
     
     <title>Víveres Pro - V20.5 Cloud Edition</title>
 
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js" crossorigin="anonymous"></script>
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js" crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
@@ -187,7 +187,7 @@
 <script>
     // --- CONFIGURACIÓN FIREBASE (Pon tus datos aquí) --
     
-    const firebaseConfig = {
+const firebaseConfig = {
   apiKey: "AIzaSyDbGb18wZ1MC2hqJOo1Gb5iv0VB-SPG3rE",
   authDomain: "viverespro.firebaseapp.com",
   projectId: "viverespro",
@@ -196,6 +196,19 @@
   appId: "1:724545083607:web:62ba4732bdd746a56bb892",
   measurementId: "G-TJ5KYS4KC6"
 };
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+    try {
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    console.log("Firebase inicializado correctamente");
+} catch (error) {
+    console.error("Error detallado de Firebase:", error.message);
+    alert("Error al conectar: " + error.message);
+    }
+    
+const analytics = getAnalytics(app);
     // VARIABLES DE ESTADO
     let currentKey = localStorage.getItem('vpro_license_key');
     let tasa = parseFloat(localStorage.getItem('v20_tasa') || 36.5);
