@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Víveres Pro - Master V20.10</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        /* ESTILOS ORIGINALES V20.5 */
+        :root {
+            --primary: #6366f1; --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
+            --dark: #0f172a; --bg: #f1f5f9; --card-bg: #ffffff;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg); margin: 0; padding: 0;
+            color: var(--dark); -webkit-tap-highlight-color: transparent;
+        }
+
+        /* PANTALLA DE BLOQUEO/ACTIVACIÓN */
+        #activation-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--dark); z-index: 10000; display: flex;
+            align-items: center; justify-content: center; color: white; padding: 20px;
+        }
+        .key-box { width: 100%; max-width: 350px; text-align: center; }
+        .key-input { 
+            width: 100%; padding: 18px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.1); 
+            background: rgba(255,255,255,0.05); color: white; text-align: center; 
+            font-size: 1.2rem; margin: 20px 0; outline: none;
+        }
+
+        /* ESTILOS DE LA APP (V20.5) */
+        .header-premium {
+            background: linear-gradient(145deg, #4f46e5 0%, #7c3aed 100%);
+            color: white; padding: 25px 20px 40px 20px; border-radius: 0 0 40px 40px;
+            box-shadow: 0 10px 25px rgba(79, 70, 229, 0.2);
+            position: sticky; top: -10px; z-index: 100;
+        }
+        .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .brand-name { font-size: 1.6rem; font-weight: 900; }
+        .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .glass-box { background: rgba(255, 255, 255, 0.12); padding: 14px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); }
+        .stat-main { font-size: 0.95rem; font-weight: 900; display: block; }
+        
+        .container { max-width: 500px; margin: auto; padding: 20px 15px 180px 15px; }
+        .product-card {
+            background: var(--card-bg); border-radius: 28px; padding: 22px; margin-bottom: 16px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.03); border: 1px solid #ffffff;
+        }
+        .product-name-hero { font-size: 1.25rem; font-weight: 800; color: var(--dark); text-transform: uppercase; }
+        
+        input.modern { width: 100%; padding: 16px; margin: 8px 0 15px 0; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; box-sizing: border-box; font-size: 1rem; outline: none; }
+        .btn-main { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 700; width: 100%; cursor: pointer; font-size: 1rem; }
+        
+        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.9); display: flex; justify-content: space-around; padding: 15px 0 35px 0; border-top: 1px solid #f1f5f9; z-index: 1000; backdrop-filter: blur(15px); }
+        .nav-item { text-align: center; color: #94a3b8; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex: 1; }
+        .nav-item.active { color: var(--primary); }
+
+        #sync-indicator { font-size: 0.6rem; font-weight: 800; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div id="activation-screen">
+    <div class="key-box">
+        <h1 style="margin:0; letter-spacing:-1px;">Víveres Pro</h1>
+        <p style="opacity: 0.6; font-size: 0.9rem;">Sistema de Gestión de Ventas</p>
+        <input type="text" id="input-key" class="key-input" placeholder="INGRESA TU LICENCIA">
+        <button class="btn-main" onclick="verificarLicencia()">ACTIVAR AHORA</button>
+        <p id="error-msg" style="color: var(--danger); font-size: 0.8rem; margin-top: 15px; font-weight: bold;"></p>
+    </div>
+</div>
+
+<div id="main-app" style="display: none;">
+    <div class="header-premium">
+        <div class="header-top">
+            <div class="brand-name">Víveres Pro</div>
+            <div id="sync-indicator">CONECTADO</div>
+        </div>
+        <div class="stats-container">
+            <div class="glass-box"><small>Venta Hoy</small><span class="stat-main" id="stat-ventas-bs">0.00 Bs</span></div>
+            <div class="glass-box"><small>Ganancia</small><span class="stat-main" id="stat-ganancia-bs" style="color: #4ade80;">0.00 Bs</span></div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="page-inv" class="page">
+            <input type="text" id="search" placeholder="🔍 Buscar producto..." class="modern" onkeyup="render()">
+            <div id="inventory-list"></div>
+        </div>
+
+        <div id="page-add" class="page" style="display:none">
+            <div style="background:white; padding:30px; border-radius:35px;">
+                <h3>📦 Nuevo Producto</h3>
+                <label>Nombre</label><input type="text" id="n-name" class="modern">
+                <label>Costo Base ($)</label><input type="number" id="n-cost" class="modern" step="0.01">
+                <label>Stock</label><input type="number" id="n-stock" class="modern">
+                <button class="btn-main" onclick="addProduct()">REGISTRAR EN NUBE</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="nav-bar">
+        <div class="nav-item active" onclick="switchTab('inv', this)">🛒<br>Ventas</div>
+        <div class="nav-item" onclick="switchTab('add', this)">📦<br>Inventario</div>
+    </nav>
+</div>
+
+<script>
+    // --- 1. CONFIGURACIÓN FIREBASE (REEMPLAZA ESTO) ---
+const firebaseConfig = {
+  apiKey: "AIzaSyDbGb18wZ1MC2hqJOo1Gb5iv0VB-SPG3rE",
+  authDomain: "viverespro.firebaseapp.com",
+  projectId: "viverespro",
+  storageBucket: "viverespro.firebasestorage.app",
+  messagingSenderId: "724545083607",
+  appId: "1:724545083607:web:62ba4732bdd746a56bb892",
+  measurementId: "G-TJ5KYS4KC6"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    db.enablePersistence(); // Activa modo Offline
+
+    let currentKey = localStorage.getItem('vpro_license_key');
+    let products = [];
+    let tasa = 36.5;
+
+    // --- 2. LÓGICA DE LICENCIA ---
+    async function verificarLicencia() {
+        const key = document.getElementById('input-key').value.trim();
+        const msg = document.getElementById('error-msg');
+        
+        if(!key) return;
+
+        try {
+            const doc = await db.collection('licencias').doc(key).get();
+            if (doc.exists && doc.data().activa) {
+                localStorage.setItem('vpro_license_key', key);
+                iniciarApp(key);
+            } else {
+                msg.innerText = "Clave inválida o expirada. Contacta al soporte.";
+            }
+        } catch (e) {
+            msg.innerText = "Error de conexión. Intenta de nuevo.";
+        }
+    }
+
+    function iniciarApp(key) {
+        currentKey = key;
+        document.getElementById('activation-screen').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+        vincularDatos();
+    }
+
+    // --- 3. SINCRONIZACIÓN EN TIEMPO REAL ---
+    function vincularDatos() {
+        // Escuchar Inventario
+        db.collection('usuarios').doc(currentKey).collection('inventario')
+            .onSnapshot(snapshot => {
+                products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                render();
+                document.getElementById('sync-indicator').style.background = "#10b981";
+                document.getElementById('sync-indicator').innerText = "SINCRONIZADO";
+            }, () => {
+                document.getElementById('sync-indicator').style.background = "#f59e0b";
+                document.getElementById('sync-indicator').innerText = "MODO LOCAL";
+            });
+    }
+
+    function render() {
+        const list = document.getElementById('inventory-list');
+        list.innerHTML = '';
+        products.forEach(p => {
+            list.innerHTML += `
+                <div class="product-card">
+                    <div class="product-name-hero">${p.n}</div>
+                    <div style="color:var(--text-muted)">Stock: ${p.s}</div>
+                    <div style="font-weight:800; color:var(--primary); font-size:1.1rem">${(p.c * 1.2 * tasa).toFixed(2)} Bs</div>
+                </div>`;
+        });
+    }
+
+    async function addProduct() {
+        const n = document.getElementById('n-name').value;
+        const c = parseFloat(document.getElementById('n-cost').value);
+        const s = parseInt(document.getElementById('n-stock').value);
+
+        if(n && c) {
+            await db.collection('usuarios').doc(currentKey).collection('inventario').add({
+                n, c, s, fecha: Date.now()
+            });
+            switchTab('inv', document.querySelectorAll('.nav-item')[0]);
+        }
+    }
+
+    function switchTab(id, el) {
+        document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('page-'+id).style.display = 'block';
+        el.classList.add('active');
+    }
+
+    // Auto-login si ya tiene la llave
+    if(currentKey) iniciarApp(currentKey);
+</script>
+</body>
+</html>
