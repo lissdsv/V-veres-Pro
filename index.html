@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Víveres Pro - Master V20.10</title>
     
-    <link rel="manifest" href="manifest.json">
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link rel="manifest" href="manifest.json">
 
     <style>
-        /* ESTILOS ORIGINALES V20.5 */
+        /* [ AQUÍ MANTENEMOS TU CSS ORIGINAL 20.5 ] */
         :root {
             --primary: #6366f1; --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
             --dark: #0f172a; --bg: #f1f5f9; --card-bg: #ffffff;
@@ -24,7 +24,7 @@
             color: var(--dark); -webkit-tap-highlight-color: transparent;
         }
 
-        /* PANTALLA DE BLOQUEO/ACTIVACIÓN */
+        /* --- ESTILO EXTRA: PANTALLA DE BLOQUEO --- */
         #activation-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--dark); z-index: 10000; display: flex;
@@ -37,7 +37,7 @@
             font-size: 1.2rem; margin: 20px 0; outline: none;
         }
 
-        /* ESTILOS DE LA APP (V20.5) */
+        /* --- EL RESTO DE TU CSS ORIGINAL --- */
         .header-premium {
             background: linear-gradient(145deg, #4f46e5 0%, #7c3aed 100%);
             color: white; padding: 25px 20px 40px 20px; border-radius: 0 0 40px 40px;
@@ -45,26 +45,35 @@
             position: sticky; top: -10px; z-index: 100;
         }
         .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
-        .brand-name { font-size: 1.6rem; font-weight: 900; }
+        .brand-name { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; }
+        .pills-row { display: flex; gap: 8px; }
+        .tasa-pill { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(10px); padding: 8px 12px; border-radius: 15px; font-size: 0.75rem; font-weight: 700; border: 1px solid rgba(255, 255, 255, 0.3); cursor: pointer; }
         .stats-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .glass-box { background: rgba(255, 255, 255, 0.12); padding: 14px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(5px); }
+        .glass-box small { display: block; font-size: 0.6rem; font-weight: 800; text-transform: uppercase; margin-bottom: 4px; opacity: 0.9; }
         .stat-main { font-size: 0.95rem; font-weight: 900; display: block; }
-        
+        .stat-sub { font-size: 0.75rem; font-weight: 600; opacity: 0.8; display: block; }
         .container { max-width: 500px; margin: auto; padding: 20px 15px 180px 15px; }
-        .product-card {
-            background: var(--card-bg); border-radius: 28px; padding: 22px; margin-bottom: 16px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.03); border: 1px solid #ffffff;
-        }
-        .product-name-hero { font-size: 1.25rem; font-weight: 800; color: var(--dark); text-transform: uppercase; }
-        
-        input.modern { width: 100%; padding: 16px; margin: 8px 0 15px 0; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; box-sizing: border-box; font-size: 1rem; outline: none; }
+        .product-card { background: var(--card-bg); border-radius: 28px; padding: 22px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.03); border: 1px solid #ffffff; }
+        .product-name-hero { font-size: 1.25rem; font-weight: 800; color: var(--dark); text-transform: uppercase; letter-spacing: -0.2px; line-height: 1.2; }
+        .modern-datepicker { border: 2px solid #f1f5f9; background: #f8fafc; padding: 12px; border-radius: 15px; font-family: inherit; font-size: 1rem; font-weight: 700; outline: none; width: 100%; box-sizing: border-box; }
+        input.modern { width: 100%; padding: 16px; margin: 8px 0 15px 0; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; box-sizing: border-box; font-size: 1rem; outline: none; font-weight: 600; }
         .btn-main { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 700; width: 100%; cursor: pointer; font-size: 1rem; }
-        
         .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.9); display: flex; justify-content: space-around; padding: 15px 0 35px 0; border-top: 1px solid #f1f5f9; z-index: 1000; backdrop-filter: blur(15px); }
         .nav-item { text-align: center; color: #94a3b8; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--primary); }
-
-        #sync-indicator { font-size: 0.6rem; font-weight: 800; background: rgba(0,0,0,0.2); padding: 4px 10px; border-radius: 10px; }
+        .modal { display: none; position: fixed; z-index: 5000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-content { background: white; width: 90%; max-width: 400px; padding: 25px; border-radius: 35px; max-height: 90vh; overflow-y: auto; }
+        #cart-bar { position: fixed; bottom: 110px; left: 50%; transform: translateX(-50%); width: 85%; background: var(--dark); color: white; padding: 20px; border-radius: 25px; display: none; justify-content: space-between; align-items: center; z-index: 1500; }
+        #toast { position: fixed; bottom: 130px; left: 50%; transform: translateX(-50%); background: var(--dark); color: white; padding: 12px 25px; border-radius: 50px; z-index: 6000; display: none; font-weight: 700; }
+        .receipt-card { background: white; border-radius: 22px; padding: 18px; margin-bottom: 12px; border: 1px solid #edf2f7; }
+        .btn-add { flex: 3; background: var(--dark); color: white; border: none; padding: 14px; border-radius: 18px; font-weight: 800; cursor: pointer; }
+        .btn-edit { flex: 1; background: #f1f5f9; color: var(--dark); border: none; padding: 14px; border-radius: 18px; font-weight: 800; cursor: pointer; }
+        .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+        .vuelto-box { padding: 15px; border-radius: 20px; text-align: center; font-weight: bold; margin-bottom: 15px; }
+        .pay-methods-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+        .method-btn { padding: 15px; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; font-weight: 800; font-size: 0.8rem; cursor: pointer; text-align: center; }
+        .method-btn.active { border-color: var(--primary); background: #e0e7ff; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -72,51 +81,81 @@
 <div id="activation-screen">
     <div class="key-box">
         <h1 style="margin:0; letter-spacing:-1px;">Víveres Pro</h1>
-        <p style="opacity: 0.6; font-size: 0.9rem;">Sistema de Gestión de Ventas</p>
-        <input type="text" id="input-key" class="key-input" placeholder="INGRESA TU LICENCIA">
-        <button class="btn-main" onclick="verificarLicencia()">ACTIVAR AHORA</button>
+        <p style="opacity: 0.6; font-size: 0.9rem;">Ingrese su Licencia de Activación</p>
+        <input type="text" id="input-key" class="key-input" placeholder="XXXX-XXXX-XXXX">
+        <button class="btn-main" onclick="verificarLicencia()">ACTIVAR APP</button>
         <p id="error-msg" style="color: var(--danger); font-size: 0.8rem; margin-top: 15px; font-weight: bold;"></p>
     </div>
 </div>
 
 <div id="main-app" style="display: none;">
+    <div id="toast"></div>
+
+    <div id="dynamic-modal" class="modal">
+        <div class="modal-content" id="modal-body"></div>
+    </div>
+
     <div class="header-premium">
         <div class="header-top">
             <div class="brand-name">Víveres Pro</div>
-            <div id="sync-indicator">CONECTADO</div>
+            <div class="pills-row">
+                <div class="tasa-pill" onclick="showConfigModal()">% <span id="margin-txt">20</span></div>
+                <div class="tasa-pill" onclick="showConfigModal()">Bs <span id="tasa-txt">0.00</span></div>
+            </div>
         </div>
         <div class="stats-container">
-            <div class="glass-box"><small>Venta Hoy</small><span class="stat-main" id="stat-ventas-bs">0.00 Bs</span></div>
-            <div class="glass-box"><small>Ganancia</small><span class="stat-main" id="stat-ganancia-bs" style="color: #4ade80;">0.00 Bs</span></div>
+            <div class="glass-box">
+                <small>Venta Total Hoy</small>
+                <span class="stat-main" id="stat-ventas-bs">0.00 Bs</span>
+                <span class="stat-sub" id="stat-ventas-usd">$ 0.00</span>
+            </div>
+            <div class="glass-box">
+                <small>Ganancia Neta</small>
+                <span class="stat-main" id="stat-ganancia-bs" style="color: #4ade80;">0.00 Bs</span>
+                <span class="stat-sub" id="stat-ganancia-usd" style="color: #4ade80;">$ 0.00</span>
+            </div>
         </div>
     </div>
 
     <div class="container">
         <div id="page-inv" class="page">
-            <input type="text" id="search" placeholder="🔍 Buscar producto..." class="modern" onkeyup="render()">
+            <input type="text" id="search" placeholder="🔍 Buscar producto..." onkeyup="render()" class="modern">
             <div id="inventory-list"></div>
         </div>
 
         <div id="page-add" class="page" style="display:none">
             <div style="background:white; padding:30px; border-radius:35px;">
-                <h3>📦 Nuevo Producto</h3>
-                <label>Nombre</label><input type="text" id="n-name" class="modern">
+                <h3>📦 Registrar Producto</h3>
+                <label>Nombre del Producto</label><input type="text" id="n-name" class="modern">
                 <label>Costo Base ($)</label><input type="number" id="n-cost" class="modern" step="0.01">
-                <label>Stock</label><input type="number" id="n-stock" class="modern">
-                <button class="btn-main" onclick="addProduct()">REGISTRAR EN NUBE</button>
+                <label>Stock Inicial</label><input type="number" id="n-stock" class="modern">
+                <button class="btn-main" onclick="addProduct()">AÑADIR A LA NUBE</button>
             </div>
+        </div>
+
+        <div id="page-hist" class="page" style="display:none">
+            <div class="calendar-section">
+                <input type="date" id="history-date" class="modern-datepicker" onchange="renderHistory()">
+            </div>
+            <div id="history-list" style="margin-top:20px;"></div>
         </div>
     </div>
 
     <nav class="nav-bar">
         <div class="nav-item active" onclick="switchTab('inv', this)">🛒<br>Ventas</div>
         <div class="nav-item" onclick="switchTab('add', this)">📦<br>Inventario</div>
+        <div class="nav-item" onclick="switchTab('hist', this)">📊<br>Caja</div>
     </nav>
+
+    <div id="cart-bar" onclick="openCart()">
+        <span id="cart-qty" style="font-weight:900">0 ITEMS</span>
+        <b id="cart-total" style="font-size:1.1rem">0.00 Bs</b>
+    </div>
 </div>
 
 <script>
-    // --- 1. CONFIGURACIÓN FIREBASE (REEMPLAZA ESTO) ---
-const firebaseConfig = {
+    // --- 1. CONFIGURACIÓN DE FIREBASE (REEMPLAZA CON TUS DATOS) ---
+    const firebaseConfig = {
   apiKey: "AIzaSyDbGb18wZ1MC2hqJOo1Gb5iv0VB-SPG3rE",
   authDomain: "viverespro.firebaseapp.com",
   projectId: "viverespro",
@@ -128,89 +167,215 @@ const firebaseConfig = {
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    db.enablePersistence(); // Activa modo Offline
+    db.enablePersistence(); // Modo Offline habilitado
 
-    let currentKey = localStorage.getItem('vpro_license_key');
-    let products = [];
+    // --- 2. VARIABLES GLOBALES ---
+    let currentKey = localStorage.getItem('vpro_key');
     let tasa = 36.5;
+    let margin = 20;
+    let products = [];
+    let history = [];
+    let cart = [];
+    let selectedMethod = 'Efectivo';
 
-    // --- 2. LÓGICA DE LICENCIA ---
+    // --- 3. SISTEMA DE LICENCIA ---
     async function verificarLicencia() {
         const key = document.getElementById('input-key').value.trim();
         const msg = document.getElementById('error-msg');
-        
         if(!key) return;
 
         try {
             const doc = await db.collection('licencias').doc(key).get();
             if (doc.exists && doc.data().activa) {
-                localStorage.setItem('vpro_license_key', key);
+                localStorage.setItem('vpro_key', key);
                 iniciarApp(key);
             } else {
-                msg.innerText = "Clave inválida o expirada. Contacta al soporte.";
+                msg.innerText = "Llave no válida o desactivada.";
             }
-        } catch (e) {
-            msg.innerText = "Error de conexión. Intenta de nuevo.";
-        }
+        } catch (e) { msg.innerText = "Error de red. Verifique su internet."; }
     }
 
     function iniciarApp(key) {
         currentKey = key;
         document.getElementById('activation-screen').style.display = 'none';
         document.getElementById('main-app').style.display = 'block';
-        vincularDatos();
+        
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('history-date').value = today;
+        
+        vincularBaseDeDatos();
     }
 
-    // --- 3. SINCRONIZACIÓN EN TIEMPO REAL ---
-    function vincularDatos() {
+    // --- 4. SINCRONIZACIÓN EN TIEMPO REAL (NUBE) ---
+    function vincularBaseDeDatos() {
+        // Escuchar Configuración (Tasa y Margen)
+        db.collection('usuarios').doc(currentKey).onSnapshot(doc => {
+            if(doc.exists) {
+                tasa = doc.data().tasa || 36.5;
+                margin = doc.data().margin || 20;
+                render();
+            }
+        });
+
         // Escuchar Inventario
         db.collection('usuarios').doc(currentKey).collection('inventario')
-            .onSnapshot(snapshot => {
-                products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            .onSnapshot(snap => {
+                products = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                 render();
-                document.getElementById('sync-indicator').style.background = "#10b981";
-                document.getElementById('sync-indicator').innerText = "SINCRONIZADO";
-            }, () => {
-                document.getElementById('sync-indicator').style.background = "#f59e0b";
-                document.getElementById('sync-indicator').innerText = "MODO LOCAL";
+            });
+
+        // Escuchar Historial
+        db.collection('usuarios').doc(currentKey).collection('historial')
+            .onSnapshot(snap => {
+                history = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderHistory();
             });
     }
 
     function render() {
+        document.getElementById('tasa-txt').innerText = tasa.toFixed(2);
+        document.getElementById('margin-txt').innerText = margin;
         const list = document.getElementById('inventory-list');
+        const q = document.getElementById('search').value.toLowerCase();
         list.innerHTML = '';
-        products.forEach(p => {
+        
+        products.filter(p => p.n.toLowerCase().includes(q)).forEach(p => {
+            const pUsd = p.c * (1 + (margin / 100));
             list.innerHTML += `
                 <div class="product-card">
                     <div class="product-name-hero">${p.n}</div>
-                    <div style="color:var(--text-muted)">Stock: ${p.s}</div>
-                    <div style="font-weight:800; color:var(--primary); font-size:1.1rem">${(p.c * 1.2 * tasa).toFixed(2)} Bs</div>
+                    <div style="font-weight:700; color:${p.s > 0 ? 'var(--success)' : 'var(--danger)'}">${p.s} disponibles</div>
+                    <div class="price-row-subtle">
+                        <span class="price-bs-subtle">${(pUsd*tasa).toFixed(2)} Bs</span>
+                        <span class="price-usd-subtle">$ ${pUsd.toFixed(2)}</span>
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn-add" onclick="addToCart('${p.id}')">AÑADIR 🛒</button>
+                        <button class="btn-edit" onclick="editProductModal('${p.id}')">⚙️</button>
+                    </div>
                 </div>`;
         });
+        updateStats();
     }
 
+    // --- 5. LÓGICA DE NEGOCIO (ADAPTADA A NUBE) ---
     async function addProduct() {
         const n = document.getElementById('n-name').value;
         const c = parseFloat(document.getElementById('n-cost').value);
-        const s = parseInt(document.getElementById('n-stock').value);
-
+        const s = parseInt(document.getElementById('n-stock').value) || 0;
         if(n && c) {
-            await db.collection('usuarios').doc(currentKey).collection('inventario').add({
-                n, c, s, fecha: Date.now()
-            });
+            await db.collection('usuarios').doc(currentKey).collection('inventario').add({ n, c, s });
+            toast("Producto en la nube");
+            document.getElementById('n-name').value = '';
+            document.getElementById('n-cost').value = '';
             switchTab('inv', document.querySelectorAll('.nav-item')[0]);
         }
     }
 
+    async function finishSale() {
+        const saleRecord = {
+            date: new Date().toISOString().split('T')[0],
+            time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+            totalBs: cart.reduce((acc, i) => acc + (i.pUsd * i.qty * tasa), 0),
+            totalGan: cart.reduce((acc, i) => acc + ((i.pUsd - i.c) * i.qty * tasa), 0),
+            method: selectedMethod,
+            items: cart.map(i => ({ n: i.n, qty: i.qty, bs: i.pUsd * i.qty * tasa }))
+        };
+
+        // 1. Guardar venta
+        await db.collection('usuarios').doc(currentKey).collection('historial').add(saleRecord);
+        
+        // 2. Descontar Stock
+        for(let item of cart) {
+            const pRef = db.collection('usuarios').doc(currentKey).collection('inventario').doc(item.id);
+            await pRef.update({ s: firebase.firestore.FieldValue.increment(-item.qty) });
+        }
+
+        cart = []; updateCartUI(); closeModal(); toast("✅ Venta Sincronizada");
+    }
+
+    async function updateConfig() {
+        const nt = parseFloat(document.getElementById('nt').value);
+        const nm = parseFloat(document.getElementById('nm').value);
+        await db.collection('usuarios').doc(currentKey).set({ tasa: nt, margin: nm }, { merge: true });
+        closeModal();
+    }
+
+    // --- REUTILIZACIÓN DE UI DE LA V20.5 ---
+    function addToCart(id) {
+        const p = products.find(x => x.id === id);
+        if(p.s <= 0) return toast("¡Sin Stock!");
+        const item = cart.find(x => x.id === id);
+        if(item) item.qty++;
+        else cart.push({ ...p, qty: 1, pUsd: p.c * (1 + (margin / 100)) });
+        updateCartUI();
+    }
+
+    function updateCartUI() {
+        const bar = document.getElementById('cart-bar');
+        if(cart.length > 0) {
+            bar.style.display = 'flex';
+            let tBs = cart.reduce((acc, i) => acc + (i.pUsd * i.qty * tasa), 0);
+            document.getElementById('cart-qty').innerText = cart.reduce((a,b)=>a+b.qty,0) + " ITEMS";
+            document.getElementById('cart-total').innerText = tBs.toFixed(2) + " Bs";
+        } else bar.style.display = 'none';
+    }
+
+    function renderHistory() {
+        const list = document.getElementById('history-list');
+        const date = document.getElementById('history-date').value;
+        const filtered = history.filter(h => h.date === date);
+        list.innerHTML = filtered.map(h => `
+            <div class="receipt-card">
+                <div style="display:flex; justify-content:space-between">
+                    <span><b>${h.time}</b><br><small>${h.method}</small></span>
+                    <b style="color:var(--primary)">${h.totalBs.toFixed(2)} Bs</b>
+                </div>
+            </div>`).join('') || '<center>Sin ventas hoy</center>';
+        updateStats();
+    }
+
+    function updateStats() {
+        const date = document.getElementById('history-date')?.value;
+        const filtered = history.filter(h => h.date === date);
+        let tBs = 0, tGan = 0;
+        filtered.forEach(h => { tBs += h.totalBs; tGan += h.totalGan; });
+        document.getElementById('stat-ventas-bs').innerText = tBs.toFixed(2) + " Bs";
+        document.getElementById('stat-ventas-usd').innerText = "$ " + (tBs / tasa).toFixed(2);
+        document.getElementById('stat-ganancia-bs').innerText = tGan.toFixed(2) + " Bs";
+        document.getElementById('stat-ganancia-usd').innerText = "$ " + (tGan / tasa).toFixed(2);
+    }
+
+    // Funciones auxiliares (Modales, Tabs, Toast) idénticas a tu V20.5
     function switchTab(id, el) {
         document.querySelectorAll('.page').forEach(p => p.style.display = 'none');
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById('page-'+id).style.display = 'block';
         el.classList.add('active');
+        if(id === 'hist') renderHistory();
+    }
+    function toast(m) { const t = document.getElementById('toast'); t.innerText=m; t.style.display='block'; setTimeout(()=>t.style.display='none', 2000); }
+    function closeModal() { document.getElementById('dynamic-modal').style.display = 'none'; }
+    function showConfigModal() {
+        const body = document.getElementById('modal-body');
+        body.innerHTML = `<h3>Configuración</h3><label>Tasa</label><input type="number" id="nt" class="modern" value="${tasa}"><label>Margen %</label><input type="number" id="nm" class="modern" value="${margin}"><button class="btn-main" onclick="updateConfig()">GUARDAR EN NUBE</button>`;
+        document.getElementById('dynamic-modal').style.display = 'flex';
     }
 
-    // Auto-login si ya tiene la llave
+    // Auto-login
     if(currentKey) iniciarApp(currentKey);
+
+    // Funciones de Carrito y Cobro (Simplificadas para esta versión)
+    function openCart() {
+        const body = document.getElementById('modal-body');
+        const tBs = cart.reduce((acc, i) => acc + (i.pUsd * i.qty * tasa), 0);
+        body.innerHTML = `
+            <h3>Cobrar</h3>
+            <div style="font-size:2rem; font-weight:900; text-align:center">${tBs.toFixed(2)} Bs</div>
+            <button class="btn-main" style="background:var(--success); margin-top:20px" onclick="finishSale()">FINALIZAR VENTA ✅</button>
+            <button class="btn-ghost" onclick="cart=[]; updateCartUI(); closeModal();">VACIAR</button>`;
+        document.getElementById('dynamic-modal').style.display = 'flex';
+    }
 </script>
 </body>
 </html>
