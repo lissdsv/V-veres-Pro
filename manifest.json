@@ -1,13 +1,20 @@
 {
-  "name": "Víveres Pro V20",
-  "short_name": "VPro",
+  "name": "Víveres Pro - Gestión de Inventario",
+  "short_name": "Víveres Pro",
+  "description": "Sistema profesional de inventario y ventas con licencias.",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#0f172a",
   "theme_color": "#6366f1",
+  "orientation": "portrait",
   "icons": [
     {
-      "src": "https://logo-suggestion.renderforest.com/suggestions-images/f020/2d26/f0202d26cd0b9ff965ff41a623718043.png",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
