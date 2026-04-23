@@ -6,9 +6,24 @@
     <title>Víveres Pro - V20.5 Calendar Edition</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+  // Reemplaza esto con tus credenciales de la consola de Firebase
+  const firebaseConfig = {
+  apiKey: "AIzaSyDbGb18wZ1MC2hqJOo1Gb5iv0VB-SPG3rE",
+  authDomain: "viverespro.firebaseapp.com",
+  projectId: "viverespro",
+  storageBucket: "viverespro.firebasestorage.app",
+  messagingSenderId: "724545083607",
+  appId: "1:724545083607:web:62ba4732bdd746a56bb892",
+  measurementId: "G-TJ5KYS4KC6"
+};
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
 
     <style>
         :root {
@@ -102,9 +117,48 @@
         .pay-methods-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .method-btn { padding: 15px; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; font-weight: 800; font-size: 0.8rem; cursor: pointer; text-align: center; }
         .method-btn.active { border-color: var(--primary); background: #e0e7ff; color: var(--primary); }
+        
+                .method-btn.active { border-color: var(--primary); background: #e0e7ff; color: var(--primary); }
+
+        /* --- NUEVO: BLOQUEO POR LICENCIA --- */
+        #license-lock {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: #0f172a; /* Color oscuro para que no vean la app de fondo */
+            z-index: 9999; 
+            display: none; /* Se activa por JavaScript si no hay licencia */
+            align-items: center; 
+            justify-content: center; 
+            color: white; 
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        #license-lock .modern {
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            margin: 20px 0;
+            border: 2px solid #4f46e5;
+        }
+        
     </style>
 </head>
 <body>
+
+<div id="license-lock">
+    <div style="padding: 20px;">
+        <h2>🔐 Licencia Requerida</h2>
+        <p>Introduce tu clave para activar Víveres Pro</p>
+        <input type="text" id="license-input" class="modern" placeholder="XXXX-XXXX-XXXX">
+        <button class="btn-main" onclick="validateLicense()">ACTIVAR APP</button>
+        <p id="license-status" style="margin-top:15px; font-size:0.8rem; color:var(--danger)"></p>
+    </div>
+</div>
+
 
 <div id="toast"></div>
 
@@ -114,9 +168,6 @@
 
 <div class="header-premium">
     <div class="header-top">
-      <button onclick="logout()" style="background:white; border:none; padding:8px 12px; border-radius:10px; font-weight:bold;">
-🚪 Salir
-</button>
         <div class="brand-name">Víveres Pro</div>
         <div class="pills-row">
             <div class="tasa-pill" onclick="showConfigModal()">% <span id="margin-txt">20</span></div>
@@ -180,51 +231,28 @@
 
 <script>
   
-  const firebaseConfig = {
-  apiKey: "AIzaSyDbGb18wZ1MC2hqJOo1Gb5iv0VB-SPG3rE",
-  authDomain: "viverespro.firebaseapp.com",
-  projectId: "viverespro",
-  storageBucket: "viverespro.firebasestorage.app",
-  messagingSenderId: "724545083607",
-  appId: "1:724545083607:web:62ba4732bdd746a56bb892"
-};
+  async function loadData() {
+    const licenseKey = localStorage.getItem('v20_license');
+    if (!licenseKey) return;
 
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
-  
-  function loginModal() {
-    const body = document.getElementById('modal-body');
-
-    body.innerHTML = 
-        <div style="text-align:center">
-            <h2>🔐 Acceso al sistema</h2>
-
-            <input id="email" class="modern" placeholder="Correo">
-            <input id="pass" class="modern" type="password" placeholder="Contraseña">
-
-            <button class="btn-main" onclick="doLogin()">ENTRAR</button>
-        </div>
-    ;
-
-    document.getElementById('dynamic-modal').style.display = 'flex';
+    try {
+        const doc = await db.collection("licencias").doc(licenseKey).get();
+        if (doc.exists) {
+            const data = doc.data();
+            // Si el documento tiene datos, reemplazamos lo local con lo de la nube
+            if (data.inventory) products = data.inventory;
+            if (data.history) history = data.history;
+            if (data.config) {
+                tasa = data.config.tasa || tasa;
+                margin = data.config.margin || margin;
+            }
+            render(); // Dibujamos la app con los datos nuevos
+        }
+    } catch (error) {
+        console.error("Error cargando datos de Firebase:", error);
+    }
 }
-  
-  function doLogin() {
-    const email = document.getElementById('email').value;
-    const pass = document.getElementById('pass').value;
 
-    auth.signInWithEmailAndPassword(email, pass)
-    .then(() => {
-        closeModal();
-        toast("Bienvenido 👋");
-        loadCloudData();
-    })
-    .catch(err => {
-        toast("Error de login");
-        console.log(err);
-    });
-}
   
     let tasa = parseFloat(localStorage.getItem('v20_tasa') || 36.5);
     let margin = parseFloat(localStorage.getItem('v20_margin') || 20);
@@ -233,27 +261,65 @@ const auth = firebase.auth();
     let cart = [];
     let selectedMethod = 'Efectivo';
 
-function logout() {
-    auth.signOut().then(() => {
-        location.reload();
-    });
+    // Inicializar fecha de hoy en el calendario
+ window.onload = async () => {
+    const savedKey = localStorage.getItem('v20_license');
+    
+    if (!savedKey) {
+        document.getElementById('license-lock').style.display = 'flex';
+    } else {
+        const isValid = await checkLicenseInFirebase(savedKey);
+        if (!isValid) {
+            document.getElementById('license-lock').style.display = 'flex';
+        } else {
+            // SI LA LICENCIA ES VÁLIDA, CARGAMOS LOS DATOS
+            await loadData(); 
+        }
+    }
+
+    // Configuración inicial de fecha (tu código original)
+    const today = new Date().toISOString().split('T')[0];
+    const historyDateInput = document.getElementById('history-date');
+    if (historyDateInput) historyDateInput.value = today;
+    
+    render();
+};
+
+
+async function validateLicense() {
+    const key = document.getElementById('license-input').value.trim();
+    const statusMsg = document.getElementById('license-status');
+    
+    statusMsg.innerText = "Verificando...";
+    
+    const isValid = await checkLicenseInFirebase(key);
+    
+    if (isValid) {
+        localStorage.setItem('v20_license', key);
+        document.getElementById('license-lock').style.display = 'none';
+        toast("✅ Licencia Activada");
+    } else {
+        statusMsg.innerText = "❌ Clave inválida o expirada";
+    }
 }
 
-    // Inicializar fecha de hoy en el calendario
-window.onload = () => {
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('history-date').value = today;
-
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            // Usuario logueado → cargar datos
-            loadCloudData();
-        } else {
-            // No logueado → abrir login
-            loginModal();
+async function checkLicenseInFirebase(key) {
+    try {
+        const doc = await db.collection("licencias").doc(key).get();
+        if (doc.exists) {
+            const data = doc.data();
+            // Verificar si está activa y si no ha expirado
+            if (data.status === "active") {
+                return true;
+            }
         }
-    });
-};
+        return false;
+    } catch (e) {
+        console.error("Error validando licencia:", e);
+        return false;
+    }
+}
+
 
     function render() {
         document.getElementById('tasa-txt').innerText = tasa.toFixed(2);
@@ -537,13 +603,31 @@ window.onload = () => {
 
     function toast(m) { const t = document.getElementById('toast'); t.innerText=m; t.style.display='block'; setTimeout(()=>t.style.display='none', 2000); }
     function closeModal() { document.getElementById('dynamic-modal').style.display = 'none'; }
-    function save() {
-        localStorage.setItem('v20_inv', JSON.stringify(products));
-        localStorage.setItem('v20_hist', JSON.stringify(history));
-        localStorage.setItem('v20_tasa', tasa);
-        localStorage.setItem('v20_margin', margin);
-        render();
-    }
+// Sincroniza los datos con Firebase
+async function save() {
+    const licenseKey = localStorage.getItem('v20_license');
+    if (!licenseKey) return;
+
+    // Guardamos en la colección de esa licencia específica
+    await db.collection("licencias").doc(licenseKey).update({
+        inventory: products,
+        history: history,
+        config: { tasa, margin }
+    });
+    
+    render();
+}
+
+    
+    if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker registrado', reg))
+            .catch(err => console.log('Error al registrar Service Worker', err));
+    });
+}
+
+    
 </script>
 </body>
 </html>
