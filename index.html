@@ -226,30 +226,6 @@
 </div>
 
 <script>
-    // --- CONFIGURACIÓN FIREBASE (Pon tus datos aquí) --
-    
-const firebaseConfig = {
-  apiKey: "AIzaSyDbGb18wZ1MC2hqJOo1Gb5iv0VB-SPG3rE",
-  authDomain: "viverespro.firebaseapp.com",
-  projectId: "viverespro",
-  storageBucket: "viverespro.firebasestorage.app",
-  messagingSenderId: "724545083607",
-  appId: "1:724545083607:web:62ba4732bdd746a56bb892",
-  measurementId: "G-TJ5KYS4KC6"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-    try {
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-    console.log("Firebase inicializado correctamente");
-} catch (error) {
-    console.error("Error detallado de Firebase:", error.message);
-    alert("Error al conectar: " + error.message);
-    }
-    
-const analytics = getAnalytics(app);
     // VARIABLES DE ESTADO
     let currentKey = localStorage.getItem('vpro_license_key');
     let tasa = parseFloat(localStorage.getItem('v20_tasa') || 36.5);
@@ -595,6 +571,60 @@ const analytics = getAnalytics(app);
 </script>
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
+
+<script>
+  // 2. Definimos la variable de la base de datos GLOBALMENTE
+  let db;
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyOb6b18wZ1MC2hqJOo1Gb5iv0V8-SPG3zE",
+    authDomain: "viverespro.firebaseapp.com",
+    projectId: "viverespro",
+    storageBucket: "viverespro.firebasestorage.app",
+    messagingSenderId: "724545083607",
+    appId: "1:724545083607:web:62ba4732bdd746a56bb892"
+  };
+
+  // 3. Inicializamos y asignamos a la variable db
+  try {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    console.log("✅ Conexión con la base de datos lista");
+  } catch (e) {
+    console.error("❌ Fallo al inicializar Firebase:", e);
+  }
+
+  // 4. Ahora sí, la función de la licencia
+  async function verificarLicencia() {
+    const claveInput = document.getElementById('licenciaInput').value;
+    
+    // Verificamos que db exista antes de usarlo
+    if (!db) {
+      alert("La base de datos aún no carga. Espera 2 segundos.");
+      return;
+    }
+
+    try {
+      // Buscamos la licencia en la colección 'licencias'
+      const doc = await db.collection('licencias').doc(claveInput).get();
+      
+      if (doc.exists && doc.data().activa === true) {
+        alert("¡Licencia Activada!");
+        localStorage.setItem('licencia_viveres', claveInput); // Guarda la sesión
+        location.reload(); // Recarga para entrar a la app
+      } else {
+        alert("Clave inválida o expirada.");
+      }
+    } catch (error) {
+      console.error("Error en Firestore:", error);
+      alert("No se pudo conectar con la base de datos.");
+    }
+  }
+</script>
+
     
 </body>
 </html>
