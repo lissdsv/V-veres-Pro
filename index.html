@@ -599,30 +599,39 @@
 
   // 4. Ahora sí, la función de la licencia
   async function verificarLicencia() {
-    const claveInput = document.getElementById('licenciaInput').value;
+    // 1. Buscamos el elemento primero
+    const campoTexto = document.getElementById('licenciaInput');
     
-    // Verificamos que db exista antes de usarlo
-    if (!db) {
-      alert("La base de datos aún no carga. Espera 2 segundos.");
-      return;
+    // 2. Verificamos que el elemento exista antes de pedirle el .value
+    if (!campoTexto) {
+        alert("Error técnico: No se encontró la caja de texto con id='licenciaInput'");
+        return;
+    }
+
+    const claveIngresada = campoTexto.value.trim(); // .trim() quita espacios accidentales
+
+    if (!claveIngresada) {
+        alert("Por favor, escribe una clave.");
+        return;
     }
 
     try {
-      // Buscamos la licencia en la colección 'licencias'
-      const doc = await db.collection('licencias').doc(claveInput).get();
-      
-      if (doc.exists && doc.data().activa === true) {
-        alert("¡Licencia Activada!");
-        localStorage.setItem('licencia_viveres', claveInput); // Guarda la sesión
-        location.reload(); // Recarga para entrar a la app
-      } else {
-        alert("Clave inválida o expirada.");
-      }
+        // Buscamos en tu colección de Firebase
+        const doc = await db.collection('licencias').doc(claveIngresada).get();
+        
+        if (doc.exists && doc.data().activa === true) {
+            alert("✅ ¡Licencia Validada!");
+            localStorage.setItem('sesion_activa', 'true');
+            location.reload(); 
+        } else {
+            alert("❌ Clave incorrecta o desactivada.");
+        }
     } catch (error) {
-      console.error("Error en Firestore:", error);
-      alert("No se pudo conectar con la base de datos.");
+        console.error("Error al consultar:", error);
+        alert("Error de red al consultar la licencia.");
     }
-  }
+}
+
 </script>
 
     
