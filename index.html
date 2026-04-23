@@ -7,47 +7,64 @@
     
     <title>Víveres Pro - V20.5 Cloud Edition</title>
 
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore-compat.js"></script>
 
-    <script>
-  <script>
-  // Tus datos reales de la captura
+<script>
+  // Tu configuración (sacada de tu captura de pantalla)
   const firebaseConfig = {
-    apiKey: "AIzaSyOb6b18wZ1MC2hqJOo1Gb5iv0V8-SPG3zE",
+    apiKey: "AIzaSyDb6b18wZ1MC2hqJOo1Gb5iv0Y8-SPG3zE",
     authDomain: "viverespro.firebaseapp.com",
     projectId: "viverespro",
     storageBucket: "viverespro.firebasestorage.app",
-    messagingSenderId: "724545083607",
-    appId: "1:724545083607:web:62ba4732bdd746a56bb892"
+    messagingSenderId: "724545803607",
+    appId: "1:724545803607:web:62ba4732bdd746a56bb892",
+    measurementId: "G-TJ5KY54KC6"
   };
 
   // Inicializar Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
+  console.log("✅ Conexión con la base de datos lista");
 
   // ESTA ES LA FUNCIÓN QUE FALTA SEGÚN TU ERROR
   async function verificarLicencia() {
-    const claveInput = document.getElementById('licenciaInput').value;
-    const infoEstado = document.getElementById('infoEstado'); // El texto que dice "Conectando"
+    const input = document.getElementById('licenciaInput');
+    
+    if (!input) {
+        alert("Error técnico: No se encontró la caja de texto con id='licenciaInput'");
+        return;
+    }
+
+    const claveUser = input.value.trim();
+
+    if (claveUser === "") {
+        alert("Por favor, ingresa una clave.");
+        return;
+    }
 
     try {
-      const doc = await db.collection('licencias').doc(claveInput).get();
-      
-      if (doc.exists && doc.data().activa === true) {
-        alert("¡Licencia Activada!");
-        // Aquí pones la lógica para entrar a la app (ej: ocultar login y mostrar panel)
-        document.getElementById('loginSection').style.display = 'none';
-        document.getElementById('mainApp').style.display = 'block';
-      } else {
-        alert("Clave inválida o expirada.");
-      }
+        // Buscamos en la colección 'licencias' de tu Firebase
+        const doc = await db.collection('licencias').doc(claveUser).get();
+
+        if (doc.exists) {
+            const datos = doc.data();
+            if (datos.estado === "activo") {
+                alert("¡Licencia Activada con éxito!");
+                // Aquí podrías redireccionar: window.location.href = "dashboard.html";
+            } else {
+                alert("Esta licencia está vencida o inactiva.");
+            }
+        } else {
+            alert("Clave inválida. Contacta al soporte.");
+        }
     } catch (error) {
-      console.error("Error al verificar:", error);
-      alert("Error de conexión con la base de datos.");
+        console.error("Error al consultar:", error);
+        alert("Error de red o permisos en Firebase.");
     }
-  }
+}
+
 </script>
 
     </script>
@@ -571,10 +588,7 @@
 </script>
     <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
 <script>eruda.init();</script>
-
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-
+    
 <script>
   // 3. Inicializamos y asignamos a la variable db
   try {
