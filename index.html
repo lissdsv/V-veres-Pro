@@ -605,19 +605,28 @@ async function checkLicenseInFirebase(key) {
     function closeModal() { document.getElementById('dynamic-modal').style.display = 'none'; }
 // Sincroniza los datos con Firebase
 async function save() {
-    const licenseKey = localStorage.getItem('v20_license');
-    if (!licenseKey) return;
+    // 1. Guardar en el teléfono (como respaldo rápido)
+    localStorage.setItem('v20_inv', JSON.stringify(products));
+    localStorage.setItem('v20_hist', JSON.stringify(history));
+    localStorage.setItem('v20_tasa', tasa);
+    localStorage.setItem('v20_margin', margin);
 
-    // Guardamos en la colección de esa licencia específica
-    await db.collection("licencias").doc(licenseKey).update({
-        inventory: products,
-        history: history,
-        config: { tasa, margin }
-    });
-    
+    // 2. Subir a la Nube (Firebase)
+    const licenseKey = localStorage.getItem('v20_license');
+    if (licenseKey) {
+        try {
+            await db.collection("licencias").doc(licenseKey).update({
+                inventory: products,
+                history: history,
+                config: { tasa: tasa, margin: margin }
+            });
+            console.log("Sincronizado con éxito");
+        } catch (e) {
+            console.error("Error al sincronizar:", e);
+        }
+    }
     render();
 }
-
     
     if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
