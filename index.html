@@ -272,8 +272,19 @@
         if (!isValid) {
             document.getElementById('license-lock').style.display = 'flex';
         } else {
-            // SI LA LICENCIA ES VÁLIDA, CARGAMOS LOS DATOS
-            await loadData(); 
+            // ESCUCHADOR EN TIEMPO REAL
+            db.collection("licencias").doc(savedKey).onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (data.inventory) products = data.inventory;
+                    if (data.history) history = data.history;
+                    if (data.config) {
+                        tasa = data.config.tasa || tasa;
+                        margin = data.config.margin || margin;
+                    }
+                    render(); // Se actualiza la pantalla en todos los dispositivos
+                }
+            });
         }
     }
 
@@ -605,11 +616,21 @@ async function checkLicenseInFirebase(key) {
     function closeModal() { document.getElementById('dynamic-modal').style.display = 'none'; }
 // Sincroniza los datos con Firebase
 async function save() {
-    // 1. Guardar en el teléfono (como respaldo rápido)
-    localStorage.setItem('v20_inv', JSON.stringify(products));
-    localStorage.setItem('v20_hist', JSON.stringify(history));
-    localStorage.setItem('v20_tasa', tasa);
-    localStorage.setItem('v20_margin', margin);
+    const licenseKey = localStorage.getItem('v20_license');
+    if (licenseKey) {
+        try {
+            await db.collection("licencias").doc(licenseKey).update({
+                inventory: products,
+                history: history,
+                config: { tasa: tasa, margin: margin }
+            });
+        } catch (e) {
+            console.error("Error al subir datos:", e);
+        }
+    }
+    render();
+}
+
 
     // 2. Subir a la Nube (Firebase)
     const licenseKey = localStorage.getItem('v20_license');
