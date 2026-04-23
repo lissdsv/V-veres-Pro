@@ -12,21 +12,44 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
+  <script>
+  // Tus datos reales de la captura
   const firebaseConfig = {
     apiKey: "AIzaSyOb6b18wZ1MC2hqJOo1Gb5iv0V8-SPG3zE",
     authDomain: "viverespro.firebaseapp.com",
     projectId: "viverespro",
     storageBucket: "viverespro.firebasestorage.app",
     messagingSenderId: "724545083607",
-    appId: "1:724545083607:web:62ba4732bdd746a56bb892",
-    measurementId: "G-TJ5KY54KC6"
+    appId: "1:724545083607:web:62ba4732bdd746a56bb892"
   };
 
-  // Inicialización (Estilo CDN)
+  // Inicializar Firebase
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-  
-  console.log("Firebase conectado vía CDN");
+
+  // ESTA ES LA FUNCIÓN QUE FALTA SEGÚN TU ERROR
+  async function verificarLicencia() {
+    const claveInput = document.getElementById('licenciaInput').value;
+    const infoEstado = document.getElementById('infoEstado'); // El texto que dice "Conectando"
+
+    try {
+      const doc = await db.collection('licencias').doc(claveInput).get();
+      
+      if (doc.exists && doc.data().activa === true) {
+        alert("¡Licencia Activada!");
+        // Aquí pones la lógica para entrar a la app (ej: ocultar login y mostrar panel)
+        document.getElementById('loginSection').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+      } else {
+        alert("Clave inválida o expirada.");
+      }
+    } catch (error) {
+      console.error("Error al verificar:", error);
+      alert("Error de conexión con la base de datos.");
+    }
+  }
+</script>
+
     </script>
     
     <style>
