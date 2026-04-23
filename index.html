@@ -6,24 +6,9 @@
     <title>Víveres Pro - V20.5 Calendar Edition</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-      
-      <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-      
-<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-
-<script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDbGb18wZ1MC2hqJOo1Gb5iv0VB-SPG3rE",
-    authDomain: "viverespro.firebaseapp.com",
-    projectId: "viverespro",
-    storageBucket: "viverespro.firebasestorage.app",
-    messagingSenderId: "724545083607",
-    appId: "1:724545083607:web:62ba4732bdd746a56bb892",
-    measurementId: "G-TJ5KYS4KC6"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.database();
-    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
 
     <style>
         :root {
@@ -121,119 +106,6 @@
 </head>
 <body>
 
-<div id="license-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:var(--dark); z-index:9999; display:flex; align-items:center; justify-content:center; color:white; text-align:center; font-family:sans-serif;">
-    <div style="padding:30px; background:#1e293b; border-radius:30px; width:80%; max-width:350px; box-shadow:0 20px 50px rgba(0,0,0,0.5);">
-        <h2>Víveres Pro V20</h2>
-        <p style="opacity:0.7; font-size:0.9rem;">Esta copia no está activada.</p>
-        <input type="text" id="license-key" placeholder="Introduce tu licencia" class="modern" style="margin-top:20px; text-align:center; letter-spacing:2px;">
-        <button class="btn-main" onclick="activateApp()" style="background:var(--success)">ACTIVAR AHORA</button>
-        <p style="margin-top:20px; font-size:0.7rem;">ID de Equipo: <span id="device-id"></span></p>
-    </div>
-</div>
-
-<script>
-  
-  async function verificarLicencia(key) {
-    try {
-        // Conexión a Cloud Firestore (la de tu imagen)
-        const docRef = firebase.firestore().collection("licencias").doc(key);
-        const doc = await docRef.get();
-        
-        const hoy = new Date().toISOString().split('T')[0];
-
-        if (doc.exists) {
-            const data = doc.data();
-            // Verificamos si está activa y si no ha vencido
-            if (data.activa === true && data.fechaVence >= hoy) {
-                document.getElementById('license-screen').style.display = 'none';
-                render(); 
-            } else {
-                bloquearApp("Licencia vencida o desactivada.");
-            }
-        } else {
-            bloquearApp("La clave no existe en el servidor.");
-        }
-    } catch (e) {
-        console.error("Error:", e);
-        // En caso de error de red en Táchira, permitimos entrada temporal
-        document.getElementById('license-screen').style.display = 'none';
-        render();
-    }
-}
-  
-async function validarLicenciaServidor() {
-    const localKey = localStorage.getItem('v20_key_used');
-    const screen = document.getElementById('license-screen');
-    
-    if (!localKey) {
-        screen.style.display = 'flex';
-        return;
-    }
-
-    try {
-        // Consultamos la licencia en la rama "licencias" de tu Firebase
-        const snapshot = await db.ref('licencias/' + localKey).once('value');
-        const data = snapshot.val();
-
-        if (data) {
-            const hoy = new Date();
-            const vencimiento = new Date(data.fechaVence); // Formato: "YYYY-MM-DD"
-
-            if (hoy < vencimiento) {
-                // LICENCIA VÁLIDA
-                screen.style.display = 'none';
-                console.log(`Licencia activa hasta: ${data.fechaVence}`);
-                
-                // OPCIONAL: Sincronización automática al iniciar
-                if (data.respaldo) {
-                    // Aquí podrías cargar los datos de la nube si el localStorage está vacío
-                }
-            } else {
-                // LICENCIA VENCIDA
-                bloquearApp("Tu suscripción venció el " + data.fechaVence);
-            }
-        } else {
-            bloquearApp("Licencia no encontrada en el servidor.");
-        }
-    } catch (error) {
-        console.error("Error de conexión:", error);
-        // Si no hay internet, permitimos uso offline temporal basado en caché
-        checkOfflineGracePeriod();
-    }
-}
-
-function bloquearApp(mensaje) {
-    const screen = document.getElementById('license-screen');
-    screen.style.display = 'flex';
-    screen.innerHTML = `
-        <div style="padding:30px; background:#1e293b; border-radius:30px; width:80%; max-width:350px;">
-            <h2 style="color:#ef4444">⚠️ Acceso Restringido</h2>
-            <p style="color:white">${mensaje}</p>
-            <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
-            <button class="btn-ghost" onclick="localStorage.clear(); location.reload()">USAR OTRA CLAVE</button>
-        </div>`;
-}
-
-// Reemplaza tu antigua función activateApp por esta:
-async function activateApp() {
-    const key = document.getElementById('license-key').value.trim();
-    if(!key) return alert("Ingresa una clave");
-
-    const snapshot = await db.ref('licencias/' + key).once('value');
-    if(snapshot.exists()) {
-        localStorage.setItem('v20_key_used', key);
-        validarLicenciaServidor();
-    } else {
-        alert("La clave ingresada no existe en nuestro sistema.");
-    }
-}
-
-    
-    // Ejecutar al cargar
-    checkLicense();
-</script>
-
-
 <div id="toast"></div>
 
 <div id="dynamic-modal" class="modal">
@@ -242,6 +114,9 @@ async function activateApp() {
 
 <div class="header-premium">
     <div class="header-top">
+      <button onclick="logout()" style="background:white; border:none; padding:8px 12px; border-radius:10px; font-weight:bold;">
+🚪 Salir
+</button>
         <div class="brand-name">Víveres Pro</div>
         <div class="pills-row">
             <div class="tasa-pill" onclick="showConfigModal()">% <span id="margin-txt">20</span></div>
@@ -304,6 +179,53 @@ async function activateApp() {
 </div>
 
 <script>
+  
+  const firebaseConfig = {
+  apiKey: "AIzaSyDbGb18wZ1MC2hqJOo1Gb5iv0VB-SPG3rE",
+  authDomain: "viverespro.firebaseapp.com",
+  projectId: "viverespro",
+  storageBucket: "viverespro.firebasestorage.app",
+  messagingSenderId: "724545083607",
+  appId: "1:724545083607:web:62ba4732bdd746a56bb892"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const auth = firebase.auth();
+  
+  function loginModal() {
+    const body = document.getElementById('modal-body');
+
+    body.innerHTML = 
+        <div style="text-align:center">
+            <h2>🔐 Acceso al sistema</h2>
+
+            <input id="email" class="modern" placeholder="Correo">
+            <input id="pass" class="modern" type="password" placeholder="Contraseña">
+
+            <button class="btn-main" onclick="doLogin()">ENTRAR</button>
+        </div>
+    ;
+
+    document.getElementById('dynamic-modal').style.display = 'flex';
+}
+  
+  function doLogin() {
+    const email = document.getElementById('email').value;
+    const pass = document.getElementById('pass').value;
+
+    auth.signInWithEmailAndPassword(email, pass)
+    .then(() => {
+        closeModal();
+        toast("Bienvenido 👋");
+        loadCloudData();
+    })
+    .catch(err => {
+        toast("Error de login");
+        console.log(err);
+    });
+}
+  
     let tasa = parseFloat(localStorage.getItem('v20_tasa') || 36.5);
     let margin = parseFloat(localStorage.getItem('v20_margin') || 20);
     let products = JSON.parse(localStorage.getItem('v20_inv') || "[]");
@@ -311,12 +233,27 @@ async function activateApp() {
     let cart = [];
     let selectedMethod = 'Efectivo';
 
+function logout() {
+    auth.signOut().then(() => {
+        location.reload();
+    });
+}
+
     // Inicializar fecha de hoy en el calendario
-    window.onload = () => {
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('history-date').value = today;
-        render();
-    };
+window.onload = () => {
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('history-date').value = today;
+
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            // Usuario logueado → cargar datos
+            loadCloudData();
+        } else {
+            // No logueado → abrir login
+            loginModal();
+        }
+    });
+};
 
     function render() {
         document.getElementById('tasa-txt').innerText = tasa.toFixed(2);
@@ -601,52 +538,12 @@ async function activateApp() {
     function toast(m) { const t = document.getElementById('toast'); t.innerText=m; t.style.display='block'; setTimeout(()=>t.style.display='none', 2000); }
     function closeModal() { document.getElementById('dynamic-modal').style.display = 'none'; }
     function save() {
-    // 1. Guardas en el teléfono (Offline)
-    localStorage.setItem('v20_inv', JSON.stringify(products));
-    localStorage.setItem('v20_hist', JSON.stringify(history));
-    localStorage.setItem('v20_tasa', tasa);
-    localStorage.setItem('v20_margin', margin);
-
-    // 2. Sincronizas con la nube (Online)
-    if (navigator.onLine) {
-        const userId = localStorage.getItem('v20_key_used'); // Usamos la licencia como ID de cuenta
-        firebase.database().ref('users/' + userId).set({
-            inventory: products,
-            history: history,
-            config: { tasa, margin }
-        });
+        localStorage.setItem('v20_inv', JSON.stringify(products));
+        localStorage.setItem('v20_hist', JSON.stringify(history));
+        localStorage.setItem('v20_tasa', tasa);
+        localStorage.setItem('v20_margin', margin);
+        render();
     }
-    render();
-}
-
-    
-    
-    
 </script>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js')
-      .then(() => console.log("Víveres Pro: Lista para uso Offline"));
-  }
-</script>
-
-<script>
-  function exportarDatos() {
-    const data = {
-      inv: localStorage.getItem('v20_inv'),
-      hist: localStorage.getItem('v20_hist'),
-      tasa: localStorage.getItem('v20_tasa'),
-      margin: localStorage.getItem('v20_margin')
-    };
-    const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `backup_viveres_${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-  }
-</script>
-
 </body>
 </html>
