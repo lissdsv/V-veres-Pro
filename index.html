@@ -3,74 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <title>Víveres Pro - V20.5 Calendar Edition</title>
     
-    <title>Víveres Pro - V20.5 Cloud Edition</title>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.1.1/firebase-firestore-compat.js"></script>
+      
+      <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+      
+<script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
 
 <script>
-  // Tu configuración (sacada de tu captura de pantalla)
   const firebaseConfig = {
-    apiKey: "AIzaSyDb6b18wZ1MC2hqJOo1Gb5iv0Y8-SPG3zE",
+    apiKey: "AIzaSyDbGb18wZ1MC2hqJOo1Gb5iv0VB-SPG3rE",
     authDomain: "viverespro.firebaseapp.com",
     projectId: "viverespro",
     storageBucket: "viverespro.firebasestorage.app",
-    messagingSenderId: "724545803607",
-    appId: "1:724545803607:web:62ba4732bdd746a56bb892",
-    measurementId: "G-TJ5KY54KC6"
+    messagingSenderId: "724545083607",
+    appId: "1:724545083607:web:62ba4732bdd746a56bb892",
+    measurementId: "G-TJ5KYS4KC6"
   };
-
-  // Inicializar Firebase
   firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-  console.log("✅ Conexión con la base de datos lista");
-
-  // ESTA ES LA FUNCIÓN QUE FALTA SEGÚN TU ERROR
-  async function verificarLicencia() {
-    const input = document.getElementById('licenciaInput');
-    
-    if (!input) {
-        alert("Error técnico: No se encontró la caja de texto con id='licenciaInput'");
-        return;
-    }
-
-    const claveUser = input.value.trim();
-
-    if (claveUser === "") {
-        alert("Por favor, ingresa una clave.");
-        return;
-    }
-
-    try {
-        // Buscamos en la colección 'licencias' de tu Firebase
-        const doc = await db.collection('licencias').doc(claveUser).get();
-
-        if (doc.exists) {
-            const datos = doc.data();
-            if (datos.estado === "activo") {
-                alert("¡Licencia Activada con éxito!");
-                // Aquí podrías redireccionar: window.location.href = "dashboard.html";
-            } else {
-                alert("Esta licencia está vencida o inactiva.");
-            }
-        } else {
-            alert("Clave inválida. Contacta al soporte.");
-        }
-    } catch (error) {
-        console.error("Error al consultar:", error);
-        alert("Error de red o permisos en Firebase.");
-    }
-}
-
-</script>
-
+  const db = firebase.database();
     </script>
-    
+
     <style>
-        /* TUS ESTILOS ORIGINALES INTACTOS */
         :root {
             --primary: #6366f1; --success: #10b981; --danger: #ef4444; --warning: #f59e0b;
             --dark: #0f172a; --bg: #f1f5f9; --card-bg: #ffffff;
@@ -83,6 +38,7 @@
             color: var(--dark); -webkit-tap-highlight-color: transparent;
         }
 
+        /* HEADER PREMIUM */
         .header-premium {
             background: linear-gradient(145deg, #4f46e5 0%, #7c3aed 100%);
             color: white; padding: 25px 20px 40px 20px; border-radius: 0 0 40px 40px;
@@ -104,6 +60,7 @@
 
         .container { max-width: 500px; margin: auto; padding: 20px 15px 180px 15px; }
 
+        /* CALENDARIO MODERNO */
         .calendar-section {
             background: white; padding: 20px; border-radius: 25px; margin-bottom: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
@@ -115,7 +72,9 @@
             font-family: inherit; font-size: 1rem; font-weight: 700; color: var(--dark);
             outline: none; cursor: pointer; transition: 0.3s;
         }
+        .modern-datepicker:focus { border-color: var(--primary); background: white; }
 
+        /* PRODUCT CARDS */
         .product-card {
             background: var(--card-bg); border-radius: 28px; padding: 22px; margin-bottom: 16px;
             display: flex; flex-direction: column; gap: 8px; box-shadow: 0 10px 20px rgba(0,0,0,0.03); border: 1px solid #ffffff;
@@ -132,16 +91,19 @@
         .btn-add { flex: 3; background: var(--dark); color: white; border: none; padding: 14px; border-radius: 18px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 0.9rem; }
         .btn-edit { flex: 1; background: #f1f5f9; color: var(--dark); border: none; padding: 14px; border-radius: 18px; font-weight: 800; cursor: pointer; }
 
+        /* MODALES */
         .modal { display: none; position: fixed; z-index: 5000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); align-items: center; justify-content: center; backdrop-filter: blur(10px); }
         .modal-content { background: white; width: 90%; max-width: 400px; padding: 25px; border-radius: 35px; box-shadow: 0 25px 50px rgba(0,0,0,0.2); max-height: 90vh; overflow-y: auto; position: relative; }
         input.modern { width: 100%; padding: 16px; margin: 8px 0 15px 0; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; box-sizing: border-box; font-size: 1rem; outline: none; font-weight: 600; }
         .btn-main { background: var(--primary); color: white; border: none; padding: 18px; border-radius: 20px; font-weight: 700; width: 100%; cursor: pointer; font-size: 1rem; margin-top: 10px; }
         .btn-ghost { background: none; color: #64748b; border: none; padding: 12px; width: 100%; font-weight: 700; cursor: pointer; margin-top: 5px; }
 
+        /* NAV BAR */
         .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.9); display: flex; justify-content: space-around; padding: 15px 0 35px 0; border-top: 1px solid #f1f5f9; z-index: 1000; backdrop-filter: blur(15px); }
         .nav-item { text-align: center; color: #94a3b8; font-size: 0.75rem; font-weight: 700; cursor: pointer; flex: 1; }
         .nav-item.active { color: var(--primary); transform: translateY(-3px); transition: 0.3s; }
 
+        /* HISTORIAL */
         .receipt-card { background: white; border-radius: 22px; padding: 18px; margin-bottom: 12px; border: 1px solid #edf2f7; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
         .receipt-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
         .receipt-details { font-size: 0.8rem; color: #64748b; border-top: 1px dashed #e2e8f0; padding-top: 10px; margin-top: 10px; }
@@ -155,138 +117,206 @@
         .pay-methods-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
         .method-btn { padding: 15px; border-radius: 20px; border: 2px solid #f1f5f9; background: #f8fafc; font-weight: 800; font-size: 0.8rem; cursor: pointer; text-align: center; }
         .method-btn.active { border-color: var(--primary); background: #e0e7ff; color: var(--primary); }
-
-        /* Pantalla de Activación (Nueva) */
-        #activation-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--dark); z-index: 9999; display: flex; align-items: center; justify-content: center; color: white; padding: 20px; }
     </style>
 </head>
 <body>
 
-<div id="activation-screen">
-    <div style="text-align:center; width:100%; max-width:320px;">
-        <h1 style="margin:0; letter-spacing:-1px;">Víveres Pro</h1>
-        <p style="opacity:0.6; font-size:0.8rem; margin-bottom:30px;">V20.5 Cloud Edition</p>
-        <input type="text" id="licenciaInput" class="modern" style="text-align:center; background:rgba(255,255,255,0.1); border:none; color:white;" placeholder="CLAVE DE LICENCIA">
-        <button class="btn-main" onclick="verificarLicencia()">ACTIVAR APP</button>
-        <p id="error-msg" style="color:var(--danger); font-size:0.75rem; margin-top:15px; font-weight:700;"></p>
-    </div>
-</div>
-
-<div id="main-app" style="display:none;">
-    <div id="toast"></div>
-
-    <div id="dynamic-modal" class="modal">
-        <div class="modal-content" id="modal-body"></div>
-    </div>
-
-    <div class="header-premium">
-        <div class="header-top">
-            <div class="brand-name">Víveres Pro <br><small id="sync-status" style="font-size:0.5rem; opacity:0.7">CONECTANDO...</small></div>
-            <div class="pills-row">
-                <div class="tasa-pill" onclick="showConfigModal()">% <span id="margin-txt">20</span></div>
-                <div class="tasa-pill" onclick="showConfigModal()">Bs <span id="tasa-txt">0.00</span></div>
-            </div>
-        </div>
-        <div class="stats-container">
-            <div class="glass-box">
-                <small>Venta Total Hoy</small>
-                <span class="stat-main" id="stat-ventas-bs">0.00 Bs</span>
-                <span class="stat-sub" id="stat-ventas-usd">$ 0.00</span>
-            </div>
-            <div class="glass-box">
-                <small>Ganancia Neta</small>
-                <span class="stat-main" id="stat-ganancia-bs" style="color: #4ade80;">0.00 Bs</span>
-                <span class="stat-sub" id="stat-ganancia-usd" style="color: #4ade80;">$ 0.00</span>
-            </div>
-        </div>
-    </div>
-
-    <div class="container">
-        <div id="page-inv" class="page">
-            <input type="text" id="search" placeholder="🔍 Buscar producto..." onkeyup="render()" class="modern">
-            <div id="inventory-list"></div>
-        </div>
-
-        <div id="page-add" class="page" style="display:none">
-            <div style="background:white; padding:30px; border-radius:35px;">
-                <h3>📦 Registrar Producto</h3>
-                <label>Nombre del Producto</label><input type="text" id="n-name" class="modern">
-                <label>Costo Base ($)</label><input type="number" id="n-cost" class="modern" step="0.01">
-                <label>Stock Inicial</label><input type="number" id="n-stock" class="modern">
-                <button class="btn-main" onclick="addProduct()">AÑADIR A NUBE</button>
-            </div>
-        </div>
-
-        <div id="page-hist" class="page" style="display:none">
-            <div class="calendar-section">
-                <span class="calendar-label">Filtrar por Fecha</span>
-                <input type="date" id="history-date" class="modern-datepicker" onchange="renderHistory()">
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center">
-                <h3>Caja del día</h3>
-                <button onclick="confirmClearHistory()" style="background:#fee2e2; border:none; color:var(--danger); padding:10px 15px; border-radius:15px; font-weight:bold">VACIAR</button>
-            </div>
-            <div id="history-list"></div>
-        </div>
-    </div>
-
-    <nav class="nav-bar">
-        <div class="nav-item active" onclick="switchTab('inv', this)">🛒<br>Ventas</div>
-        <div class="nav-item" onclick="switchTab('add', this)">📦<br>Inventario</div>
-        <div class="nav-item" onclick="switchTab('hist', this)">📊<br>Caja</div>
-    </nav>
-
-    <div id="cart-bar" onclick="openCart()">
-        <span id="cart-qty" style="font-weight:900">0 ITEMS</span>
-        <b id="cart-total" style="font-size:1.1rem">0.00 Bs</b>
+<div id="license-screen" style="position:fixed; top:0; left:0; width:100%; height:100%; background:var(--dark); z-index:9999; display:flex; align-items:center; justify-content:center; color:white; text-align:center; font-family:sans-serif;">
+    <div style="padding:30px; background:#1e293b; border-radius:30px; width:80%; max-width:350px; box-shadow:0 20px 50px rgba(0,0,0,0.5);">
+        <h2>Víveres Pro V20</h2>
+        <p style="opacity:0.7; font-size:0.9rem;">Esta copia no está activada.</p>
+        <input type="text" id="license-key" placeholder="Introduce tu licencia" class="modern" style="margin-top:20px; text-align:center; letter-spacing:2px;">
+        <button class="btn-main" onclick="activateApp()" style="background:var(--success)">ACTIVAR AHORA</button>
+        <p style="margin-top:20px; font-size:0.7rem;">ID de Equipo: <span id="device-id"></span></p>
     </div>
 </div>
 
 <script>
-    // VARIABLES DE ESTADO
-    let currentKey = localStorage.getItem('vpro_license_key');
+  
+  async function verificarLicencia(key) {
+    try {
+        // Conexión a Cloud Firestore (la de tu imagen)
+        const docRef = firebase.firestore().collection("licencias").doc(key);
+        const doc = await docRef.get();
+        
+        const hoy = new Date().toISOString().split('T')[0];
+
+        if (doc.exists) {
+            const data = doc.data();
+            // Verificamos si está activa y si no ha vencido
+            if (data.activa === true && data.fechaVence >= hoy) {
+                document.getElementById('license-screen').style.display = 'none';
+                render(); 
+            } else {
+                bloquearApp("Licencia vencida o desactivada.");
+            }
+        } else {
+            bloquearApp("La clave no existe en el servidor.");
+        }
+    } catch (e) {
+        console.error("Error:", e);
+        // En caso de error de red en Táchira, permitimos entrada temporal
+        document.getElementById('license-screen').style.display = 'none';
+        render();
+    }
+}
+  
+async function validarLicenciaServidor() {
+    const localKey = localStorage.getItem('v20_key_used');
+    const screen = document.getElementById('license-screen');
+    
+    if (!localKey) {
+        screen.style.display = 'flex';
+        return;
+    }
+
+    try {
+        // Consultamos la licencia en la rama "licencias" de tu Firebase
+        const snapshot = await db.ref('licencias/' + localKey).once('value');
+        const data = snapshot.val();
+
+        if (data) {
+            const hoy = new Date();
+            const vencimiento = new Date(data.fechaVence); // Formato: "YYYY-MM-DD"
+
+            if (hoy < vencimiento) {
+                // LICENCIA VÁLIDA
+                screen.style.display = 'none';
+                console.log(`Licencia activa hasta: ${data.fechaVence}`);
+                
+                // OPCIONAL: Sincronización automática al iniciar
+                if (data.respaldo) {
+                    // Aquí podrías cargar los datos de la nube si el localStorage está vacío
+                }
+            } else {
+                // LICENCIA VENCIDA
+                bloquearApp("Tu suscripción venció el " + data.fechaVence);
+            }
+        } else {
+            bloquearApp("Licencia no encontrada en el servidor.");
+        }
+    } catch (error) {
+        console.error("Error de conexión:", error);
+        // Si no hay internet, permitimos uso offline temporal basado en caché
+        checkOfflineGracePeriod();
+    }
+}
+
+function bloquearApp(mensaje) {
+    const screen = document.getElementById('license-screen');
+    screen.style.display = 'flex';
+    screen.innerHTML = `
+        <div style="padding:30px; background:#1e293b; border-radius:30px; width:80%; max-width:350px;">
+            <h2 style="color:#ef4444">⚠️ Acceso Restringido</h2>
+            <p style="color:white">${mensaje}</p>
+            <button class="btn-main" onclick="location.reload()">REINTENTAR</button>
+            <button class="btn-ghost" onclick="localStorage.clear(); location.reload()">USAR OTRA CLAVE</button>
+        </div>`;
+}
+
+// Reemplaza tu antigua función activateApp por esta:
+async function activateApp() {
+    const key = document.getElementById('license-key').value.trim();
+    if(!key) return alert("Ingresa una clave");
+
+    const snapshot = await db.ref('licencias/' + key).once('value');
+    if(snapshot.exists()) {
+        localStorage.setItem('v20_key_used', key);
+        validarLicenciaServidor();
+    } else {
+        alert("La clave ingresada no existe en nuestro sistema.");
+    }
+}
+
+    
+    // Ejecutar al cargar
+    checkLicense();
+</script>
+
+
+<div id="toast"></div>
+
+<div id="dynamic-modal" class="modal">
+    <div class="modal-content" id="modal-body"></div>
+</div>
+
+<div class="header-premium">
+    <div class="header-top">
+        <div class="brand-name">Víveres Pro</div>
+        <div class="pills-row">
+            <div class="tasa-pill" onclick="showConfigModal()">% <span id="margin-txt">20</span></div>
+            <div class="tasa-pill" onclick="showConfigModal()">Bs <span id="tasa-txt">0.00</span></div>
+        </div>
+    </div>
+    <div class="stats-container">
+        <div class="glass-box">
+            <small>Venta Total Hoy</small>
+            <span class="stat-main" id="stat-ventas-bs">0.00 Bs</span>
+            <span class="stat-sub" id="stat-ventas-usd">$ 0.00</span>
+        </div>
+        <div class="glass-box">
+            <small>Ganancia Neta</small>
+            <span class="stat-main" id="stat-ganancia-bs" style="color: #4ade80;">0.00 Bs</span>
+            <span class="stat-sub" id="stat-ganancia-usd" style="color: #4ade80;">$ 0.00</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div id="page-inv" class="page">
+        <input type="text" id="search" placeholder="🔍 Buscar producto..." onkeyup="render()" class="modern">
+        <div id="inventory-list"></div>
+    </div>
+
+    <div id="page-add" class="page" style="display:none">
+        <div style="background:white; padding:30px; border-radius:35px;">
+            <h3>📦 Registrar Producto</h3>
+            <label>Nombre del Producto</label><input type="text" id="n-name" class="modern">
+            <label>Costo Base ($)</label><input type="number" id="n-cost" class="modern" step="0.01">
+            <label>Stock Inicial</label><input type="number" id="n-stock" class="modern">
+            <button class="btn-main" onclick="addProduct()">AÑADIR A LISTA</button>
+        </div>
+    </div>
+
+    <div id="page-hist" class="page" style="display:none">
+        <div class="calendar-section">
+            <span class="calendar-label">Filtrar por Fecha</span>
+            <input type="date" id="history-date" class="modern-datepicker" onchange="renderHistory()">
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-bottom:20px; align-items:center">
+            <h3>Caja del día</h3>
+            <button onclick="confirmClearHistory()" style="background:#fee2e2; border:none; color:var(--danger); padding:10px 15px; border-radius:15px; font-weight:bold">VACIAR</button>
+        </div>
+        <div id="history-list"></div>
+    </div>
+</div>
+
+<nav class="nav-bar">
+    <div class="nav-item active" onclick="switchTab('inv', this)">🛒<br>Ventas</div>
+    <div class="nav-item" onclick="switchTab('add', this)">📦<br>Inventario</div>
+    <div class="nav-item" onclick="switchTab('hist', this)">📊<br>Caja</div>
+</nav>
+
+<div id="cart-bar" onclick="openCart()">
+    <span id="cart-qty" style="font-weight:900">0 ITEMS</span>
+    <b id="cart-total" style="font-size:1.1rem">0.00 Bs</b>
+</div>
+
+<script>
     let tasa = parseFloat(localStorage.getItem('v20_tasa') || 36.5);
     let margin = parseFloat(localStorage.getItem('v20_margin') || 20);
-    let products = [];
-    let history = [];
+    let products = JSON.parse(localStorage.getItem('v20_inv') || "[]");
+    let history = JSON.parse(localStorage.getItem('v20_hist') || "[]");
     let cart = [];
     let selectedMethod = 'Efectivo';
 
-    // --- SISTEMA DE ACTIVACIÓN ---
-    async function verificarLicencia() {
-        const key = document.getElementById('input-key').value.trim();
-        if(!key) return;
-        const doc = await db.collection('licencias').doc(key).get();
-        if(doc.exists && doc.data().activa) {
-            localStorage.setItem('vpro_license_key', key);
-            iniciarApp(key);
-        } else {
-            document.getElementById('error-msg').innerText = "CLAVE INVÁLIDA";
-        }
-    }
-
-    function iniciarApp(key) {
-        currentKey = key;
-        document.getElementById('activation-screen').style.display = 'none';
-        document.getElementById('main-app').style.display = 'block';
-        
+    // Inicializar fecha de hoy en el calendario
+    window.onload = () => {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('history-date').value = today;
-
-        // Vínculo en tiempo real con la nube (Firestore)
-        db.collection('usuarios').doc(currentKey).collection('inventario').onSnapshot(snapshot => {
-            products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            render();
-            document.getElementById('sync-status').innerText = "SINCRONIZADO ✅";
-        });
-
-        db.collection('usuarios').doc(currentKey).collection('historial').onSnapshot(snapshot => {
-            history = snapshot.docs.map(doc => doc.data()).sort((a,b) => b.id - a.id);
-            renderHistory();
-        });
-    }
-
-    // --- TUS FUNCIONES DE RENDERIZADO ORIGINALES ---
+        render();
+    };
 
     function render() {
         document.getElementById('tasa-txt').innerText = tasa.toFixed(2);
@@ -311,15 +341,13 @@
                     </div>
                     <div class="stock-bar-bg"><div class="stock-bar-fill" style="width:${stockPct}%; background:${stockColor}"></div></div>
                     <div class="btn-row">
-                        <button class="btn-add" onclick="addToCart('${p.id}')">AÑADIR 🛒</button>
-                        <button class="btn-edit" onclick="editProductModal('${p.id}')">⚙️</button>
+                        <button class="btn-add" onclick="addToCart(${p.id})">AÑADIR 🛒</button>
+                        <button class="btn-edit" onclick="editProductModal(${p.id})">⚙️</button>
                     </div>
                 </div>`;
         });
         updateStats();
     }
-
-    // --- LÓGICA DE CARRITO Y COBRO (IGUALITA A LA TUYA) ---
 
     function addToCart(id) {
         const p = products.find(x => x.id === id);
@@ -341,14 +369,12 @@
         } else bar.style.display = 'none';
     }
 
-    // --- LA FUNCIÓN QUE AHORA GUARDA EN LA NUBE ---
-    async function finishSale() {
+    function finishSale() {
         const now = new Date();
-        const saleId = Date.now().toString();
         const saleRecord = {
             id: Date.now(),
             time: now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-            date: now.toISOString().split('T')[0],
+            date: now.toISOString().split('T')[0], // Guardamos YYYY-MM-DD para el filtro
             displayDate: now.toLocaleDateString(),
             totalBs: 0,
             totalGan: 0,
@@ -357,14 +383,9 @@
             items: []
         };
 
-        const batch = db.batch(); // Para que se descuente todo el stock al mismo tiempo
-
         cart.forEach(i => {
-            const pActual = products.find(x => x.id === i.id);
-            const pRef = db.collection('usuarios').doc(currentKey).collection('inventario').doc(i.id);
-            
-            batch.update(pRef, { s: pActual.s - i.qty });
-
+            const p = products.find(x => x.id === i.id);
+            if(p) p.s -= i.qty;
             const subtotalBs = i.pUsd * i.qty * tasa;
             const subtotalGan = (i.pUsd - i.c) * i.qty * tasa;
             saleRecord.totalBs += subtotalBs;
@@ -372,15 +393,67 @@
             saleRecord.items.push({ n: i.n, qty: i.qty, bs: subtotalBs });
         });
 
-        batch.set(db.collection('usuarios').doc(currentKey).collection('historial').doc(saleId), saleRecord);
-        
-        await batch.commit(); // Se envía a la nube
-
-        cart = []; updateCartUI(); closeModal(); toast("✅ Venta Guardada en Nube");
+        history.unshift(saleRecord);
+        cart = []; updateCartUI(); save(); closeModal(); toast("✅ Venta Guardada");
+        updateStats();
     }
 
-    // --- TUS MODALES DE COBRO Y VUELTO (SIN TOCAR) ---
+    function renderHistory() {
+        const list = document.getElementById('history-list');
+        const selectedDate = document.getElementById('history-date').value;
+        const filteredSales = history.filter(h => h.date === selectedDate);
+        
+        list.innerHTML = filteredSales.map(h => `
+            <div class="receipt-card">
+                <div class="receipt-header" onclick="toggleReceipt(${h.id})">
+                    <span><b>Recibo #${h.id.toString().slice(-4)}</b><br><small>${h.time} • ${h.method}</small></span>
+                    <div style="text-align:right">
+                        <b style="color:var(--primary)">${h.totalBs.toFixed(2)} Bs</b><br>
+                        <small style="color:var(--success); font-weight:bold">$ ${(h.totalBs/h.currentTasa).toFixed(2)}</small>
+                    </div>
+                </div>
+                <div id="details-${h.id}" class="receipt-details" style="display:none">
+                    ${h.items.map(i => `<div style="display:flex; justify-content:space-between"><span>${i.qty}x ${i.n}</span><span>${i.bs.toFixed(2)} Bs</span></div>`).join('')}
+                    <div style="margin-top:5px; font-size:0.65rem; color:#94a3b8">Tasa: ${h.currentTasa} | Ganancia: ${h.totalGan.toFixed(2)} Bs</div>
+                </div>
+            </div>`).join('') || `<center style="padding:20px; color:#94a3b8">No hay ventas el día ${selectedDate}</center>`;
+        
+        updateStats(); // Actualizamos los stats al cambiar de fecha también
+    }
 
+    function updateStats() {
+        const selectedDate = document.getElementById('history-date')?.value || new Date().toISOString().split('T')[0];
+        let totalBs = 0, totalGan = 0;
+        history.filter(h => h.date === selectedDate).forEach(h => { 
+            totalBs += h.totalBs; totalGan += h.totalGan; 
+        });
+        document.getElementById('stat-ventas-bs').innerText = totalBs.toFixed(2) + " Bs";
+        document.getElementById('stat-ventas-usd').innerText = "$ " + (totalBs / tasa).toFixed(2);
+        document.getElementById('stat-ganancia-bs').innerText = totalGan.toFixed(2) + " Bs";
+        document.getElementById('stat-ganancia-usd').innerText = "$ " + (totalGan / tasa).toFixed(2);
+    }
+
+    function toggleReceipt(id) {
+        const el = document.getElementById(`details-${id}`);
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
+    /* --- ALERTAS MODERNAS --- */
+    function confirmClearHistory() {
+        const body = document.getElementById('modal-body');
+        body.innerHTML = `
+            <div style="text-align:center; padding:10px">
+                <div style="font-size:3rem; margin-bottom:15px">⚠️</div>
+                <h3 style="margin-bottom:10px">¿Vaciar Historial?</h3>
+                <p style="color:var(--text-muted); font-weight:600; font-size:0.9rem">Esta acción eliminará TODO el historial guardado permanentemente.</p>
+                <button class="btn-main" style="background:var(--danger); margin-top:20px" onclick="clearHistoryAction()">SÍ, VACIAR TODO</button>
+                <button class="btn-ghost" onclick="closeModal()">CANCELAR</button>
+            </div>`;
+        document.getElementById('dynamic-modal').style.display = 'flex';
+    }
+    function clearHistoryAction() { history = []; save(); renderHistory(); closeModal(); toast("Historial vaciado"); }
+
+    /* --- GESTIÓN DE CARRITO Y COBRO --- */
     function openCart() {
         const body = document.getElementById('modal-body');
         const tBs = cart.reduce((acc, i) => acc + (i.pUsd * i.qty * tasa), 0);
@@ -429,7 +502,7 @@
         } else box.style.display = 'none';
     }
 
-    // --- COTIZACIÓN Y TICKET (IDÉNTICO) ---
+    /* --- VISTA DE COTIZACIÓN --- */
     function showTicketPreview() {
         const body = document.getElementById('modal-body');
         const now = new Date();
@@ -466,108 +539,55 @@
         });
     }
 
-    // --- GESTIÓN DE PRODUCTOS (VINCULADA A NUBE) ---
-
-    async function addProduct() {
-        const n = document.getElementById('n-name').value;
-        const c = parseFloat(document.getElementById('n-cost').value);
-        const s = parseInt(document.getElementById('n-stock').value) || 0;
-        if(n && c) {
-            await db.collection('usuarios').doc(currentKey).collection('inventario').add({ n, c, s });
-            toast("Producto en Nube ✅");
-            document.getElementById('n-name').value = ''; document.getElementById('n-cost').value = '';
-            switchTab('inv', document.querySelectorAll('.nav-item')[0]);
-        }
-    }
-
-    function updateProduct(id) {
-        const n = document.getElementById('e-n').value; 
-        const c = parseFloat(document.getElementById('e-c').value); 
-        const s = parseInt(document.getElementById('e-s').value);
-        db.collection('usuarios').doc(currentKey).collection('inventario').doc(id).update({ n, c, s });
-        closeModal(); toast("Actualizado ✅");
-    }
-
-    function deleteProductAction(id) {
-        db.collection('usuarios').doc(currentKey).collection('inventario').doc(id).delete();
-        closeModal(); toast("Eliminado");
-    }
-
-    // --- RESTO DE FUNCIONES UI (CALENDARIO, STATS, TABS) ---
-
-    function renderHistory() {
-        const list = document.getElementById('history-list');
-        const selectedDate = document.getElementById('history-date').value;
-        const filteredSales = history.filter(h => h.date === selectedDate);
-        
-        list.innerHTML = filteredSales.map(h => `
-            <div class="receipt-card">
-                <div class="receipt-header" onclick="toggleReceipt('${h.id}')">
-                    <span><b>Recibo #${h.id.toString().slice(-4)}</b><br><small>${h.time} • ${h.method}</small></span>
-                    <div style="text-align:right">
-                        <b style="color:var(--primary)">${h.totalBs.toFixed(2)} Bs</b><br>
-                        <small style="color:var(--success); font-weight:bold">$ ${(h.totalBs/h.currentTasa).toFixed(2)}</small>
-                    </div>
-                </div>
-                <div id="details-${h.id}" class="receipt-details" style="display:none">
-                    ${h.items.map(i => `<div style="display:flex; justify-content:space-between"><span>${i.qty}x ${i.n}</span><span>${i.bs.toFixed(2)} Bs</span></div>`).join('')}
-                    <div style="margin-top:5px; font-size:0.65rem; color:#94a3b8">Tasa: ${h.currentTasa} | Ganancia: ${h.totalGan.toFixed(2)} Bs</div>
-                </div>
-            </div>`).join('') || `<center style="padding:20px; color:#94a3b8">No hay ventas el día ${selectedDate}</center>`;
-        
-        updateStats();
-    }
-
-    function updateStats() {
-        const selectedDate = document.getElementById('history-date')?.value || new Date().toISOString().split('T')[0];
-        let totalBs = 0, totalGan = 0;
-        history.filter(h => h.date === selectedDate).forEach(h => { 
-            totalBs += h.totalBs; totalGan += h.totalGan; 
-        });
-        document.getElementById('stat-ventas-bs').innerText = totalBs.toFixed(2) + " Bs";
-        document.getElementById('stat-ventas-usd').innerText = "$ " + (totalBs / tasa).toFixed(2);
-        document.getElementById('stat-ganancia-bs').innerText = totalGan.toFixed(2) + " Bs";
-        document.getElementById('stat-ganancia-usd').innerText = "$ " + (totalGan / tasa).toFixed(2);
-    }
-
-    function toggleReceipt(id) {
-        const el = document.getElementById(`details-${id}`);
-        el.style.display = el.style.display === 'none' ? 'block' : 'none';
-    }
-
+    // --- CONFIG Y GESTIÓN PRODUCTOS ---
     function showConfigModal() {
         const body = document.getElementById('modal-body');
         body.innerHTML = `<h3>Configuración</h3><label>Tasa Bs</label><input type="number" id="nt" class="modern" value="${tasa}"><label>Margen %</label><input type="number" id="nm" class="modern" value="${margin}"><button class="btn-main" onclick="updateConfig()">GUARDAR</button><button class="btn-ghost" onclick="closeModal()">CERRAR</button>`;
         document.getElementById('dynamic-modal').style.display = 'flex';
     }
-    
-    function updateConfig() { 
-        tasa = parseFloat(document.getElementById('nt').value) || tasa; 
-        margin = parseFloat(document.getElementById('nm').value) || margin; 
-        localStorage.setItem('v20_tasa', tasa);
-        localStorage.setItem('v20_margin', margin);
-        render(); closeModal(); 
-    }
+    function updateConfig() { tasa = parseFloat(document.getElementById('nt').value) || tasa; margin = parseFloat(document.getElementById('nm').value) || margin; save(); closeModal(); }
 
     function editProductModal(id) {
         const p = products.find(x => x.id === id);
         const body = document.getElementById('modal-body');
-        body.innerHTML = `<h3>Editar Producto</h3><label>Nombre</label><input type="text" id="e-n" class="modern" value="${p.n}"><label>Costo $</label><input type="number" id="e-c" class="modern" value="${p.c}"><label>Stock</label><input type="number" id="e-s" class="modern" value="${p.s}"><button class="btn-main" onclick="updateProduct('${p.id}')">ACTUALIZAR</button><button class="btn-main" style="background:var(--danger)" onclick="confirmDeleteProduct('${p.id}')">ELIMINAR</button><button class="btn-ghost" onclick="closeModal()">CERRAR</button>`;
+        body.innerHTML = `<h3>Editar Producto</h3><label>Nombre</label><input type="text" id="e-n" class="modern" value="${p.n}"><label>Costo $</label><input type="number" id="e-c" class="modern" value="${p.c}"><label>Stock</label><input type="number" id="e-s" class="modern" value="${p.s}"><button class="btn-main" onclick="updateProduct(${p.id})">ACTUALIZAR</button><button class="btn-main" style="background:var(--danger)" onclick="confirmDeleteProduct(${p.id})">ELIMINAR</button><button class="btn-ghost" onclick="closeModal()">CERRAR</button>`;
         document.getElementById('dynamic-modal').style.display = 'flex';
     }
-
-    function confirmClearHistory() {
+    function updateProduct(id) {
+        const p = products.find(x => x.id === id);
+        p.n = document.getElementById('e-n').value; p.c = parseFloat(document.getElementById('e-c').value); p.s = parseInt(document.getElementById('e-s').value);
+        save(); closeModal();
+    }
+    function confirmDeleteProduct(id) {
         const body = document.getElementById('modal-body');
-        body.innerHTML = `<div style="text-align:center"><div style="font-size:3rem">⚠️</div><h3>¿Vaciar Nube?</h3><p>Se borrarán las ventas de la base de datos.</p><button class="btn-main" style="background:var(--danger)" onclick="clearHistoryAction()">BORRAR TODO</button><button class="btn-ghost" onclick="closeModal()">CANCELAR</button></div>`;
+        body.innerHTML = `
+            <div style="text-align:center; padding:10px">
+                <div style="font-size:3rem; margin-bottom:15px">🗑️</div>
+                <h3>¿Eliminar Producto?</h3>
+                <button class="btn-main" style="background:var(--danger); margin-top:20px" onclick="deleteProductAction(${id})">ELIMINAR AHORA</button>
+                <button class="btn-ghost" onclick="closeModal()">CANCELAR</button>
+            </div>`;
         document.getElementById('dynamic-modal').style.display = 'flex';
     }
+    function deleteProductAction(id) { products = products.filter(x => x.id !== id); save(); closeModal(); toast("Eliminado"); }
 
-    async function clearHistoryAction() {
-        const snapshot = await db.collection('usuarios').doc(currentKey).collection('historial').get();
-        const batch = db.batch();
-        snapshot.docs.forEach(doc => batch.delete(doc.ref));
-        await batch.commit();
-        closeModal(); toast("Historial Limpio");
+    function addProduct() {
+        const n = document.getElementById('n-name').value;
+        const c = parseFloat(document.getElementById('n-cost').value);
+        const s = parseInt(document.getElementById('n-stock').value) || 0;
+        if(n && c) {
+            products.push({ id: Date.now(), n, c, s });
+            save(); toast("Producto añadido");
+            document.getElementById('n-name').value = ''; document.getElementById('n-cost').value = '';
+            switchTab('inv', document.querySelectorAll('.nav-item')[0]);
+        }
+    }
+
+    // --- UI HELPERS ---
+    function setMethod(method, el) {
+        selectedMethod = method;
+        document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
     }
 
     function switchTab(id, el) {
@@ -580,62 +600,53 @@
 
     function toast(m) { const t = document.getElementById('toast'); t.innerText=m; t.style.display='block'; setTimeout(()=>t.style.display='none', 2000); }
     function closeModal() { document.getElementById('dynamic-modal').style.display = 'none'; }
-    function setMethod(method, el) { selectedMethod = method; document.querySelectorAll('.method-btn').forEach(b => b.classList.remove('active')); el.classList.add('active'); }
+    function save() {
+    // 1. Guardas en el teléfono (Offline)
+    localStorage.setItem('v20_inv', JSON.stringify(products));
+    localStorage.setItem('v20_hist', JSON.stringify(history));
+    localStorage.setItem('v20_tasa', tasa);
+    localStorage.setItem('v20_margin', margin);
 
-    // Auto-login si ya existe la llave
-    if(currentKey) iniciarApp(currentKey);
+    // 2. Sincronizas con la nube (Online)
+    if (navigator.onLine) {
+        const userId = localStorage.getItem('v20_key_used'); // Usamos la licencia como ID de cuenta
+        firebase.database().ref('users/' + userId).set({
+            inventory: products,
+            history: history,
+            config: { tasa, margin }
+        });
+    }
+    render();
+}
 
-</script>
-    <script src="https://cdn.jsdelivr.net/npm/eruda"></script>
-<script>eruda.init();</script>
     
+    
+    
+</script>
+
 <script>
-  // 3. Inicializamos y asignamos a la variable db
-  try {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    console.log("✅ Conexión con la base de datos lista");
-  } catch (e) {
-    console.error("❌ Fallo al inicializar Firebase:", e);
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js')
+      .then(() => console.log("Víveres Pro: Lista para uso Offline"));
   }
-
-  // 4. Ahora sí, la función de la licencia
-  async function verificarLicencia() {
-    // 1. Buscamos el elemento primero
-    const campoTexto = document.getElementById('licenciaInput');
-    
-    // 2. Verificamos que el elemento exista antes de pedirle el .value
-    if (!campoTexto) {
-        alert("Error técnico: No se encontró la caja de texto con id='licenciaInput'");
-        return;
-    }
-
-    const claveIngresada = campoTexto.value.trim(); // .trim() quita espacios accidentales
-
-    if (!claveIngresada) {
-        alert("Por favor, escribe una clave.");
-        return;
-    }
-
-    try {
-        // Buscamos en tu colección de Firebase
-        const doc = await db.collection('licencias').doc(claveIngresada).get();
-        
-        if (doc.exists && doc.data().activa === true) {
-            alert("✅ ¡Licencia Validada!");
-            localStorage.setItem('sesion_activa', 'true');
-            location.reload(); 
-        } else {
-            alert("❌ Clave incorrecta o desactivada.");
-        }
-    } catch (error) {
-        console.error("Error al consultar:", error);
-        alert("Error de red al consultar la licencia.");
-    } // <--- ESTA LLAVE ES LA QUE FALTA
-} // <--- Y ESTA TAMBIÉ
-
 </script>
 
-    
+<script>
+  function exportarDatos() {
+    const data = {
+      inv: localStorage.getItem('v20_inv'),
+      hist: localStorage.getItem('v20_hist'),
+      tasa: localStorage.getItem('v20_tasa'),
+      margin: localStorage.getItem('v20_margin')
+    };
+    const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `backup_viveres_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+  }
+</script>
+
 </body>
 </html>
