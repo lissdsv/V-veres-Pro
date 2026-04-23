@@ -149,7 +149,7 @@
     <div style="text-align:center; width:100%; max-width:320px;">
         <h1 style="margin:0; letter-spacing:-1px;">Víveres Pro</h1>
         <p style="opacity:0.6; font-size:0.8rem; margin-bottom:30px;">V20.5 Cloud Edition</p>
-        <input type="text" id="input-key" class="modern" style="text-align:center; background:rgba(255,255,255,0.1); border:none; color:white;" placeholder="CLAVE DE LICENCIA">
+        <input type="text" id="licenciaInput" class="modern" style="text-align:center; background:rgba(255,255,255,0.1); border:none; color:white;" placeholder="CLAVE DE LICENCIA">
         <button class="btn-main" onclick="verificarLicencia()">ACTIVAR APP</button>
         <p id="error-msg" style="color:var(--danger); font-size:0.75rem; margin-top:15px; font-weight:700;"></p>
     </div>
@@ -576,18 +576,6 @@
 <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
 <script>
-  // 2. Definimos la variable de la base de datos GLOBALMENTE
-  let db;
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyOb6b18wZ1MC2hqJOo1Gb5iv0V8-SPG3zE",
-    authDomain: "viverespro.firebaseapp.com",
-    projectId: "viverespro",
-    storageBucket: "viverespro.firebasestorage.app",
-    messagingSenderId: "724545083607",
-    appId: "1:724545083607:web:62ba4732bdd746a56bb892"
-  };
-
   // 3. Inicializamos y asignamos a la variable db
   try {
     firebase.initializeApp(firebaseConfig);
@@ -629,7 +617,7 @@
     } catch (error) {
         console.error("Error al consultar:", error);
         alert("Error de red al consultar la licencia.");
-    }
+    
 }
 
 </script>
